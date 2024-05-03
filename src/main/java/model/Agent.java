@@ -69,8 +69,6 @@ public class Agent {
     public void setAgtPosition(String agtPosition) { this.agtPosition = agtPosition; }
     public Integer getAgencyId() { return agencyId; }
     public void setAgencyId(Integer agencyId) { this.agencyId = agencyId; }
-    public String getUserid() { return userid; }
-    public void setUserid(String userid) { this.userid = userid; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
@@ -85,7 +83,6 @@ public class Agent {
                 ", agtEmail='" + agtEmail + '\'' +
                 ", agtPosition='" + agtPosition + '\'' +
                 ", agencyId=" + agencyId +
-                ", userid='" + userid + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

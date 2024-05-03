@@ -9,6 +9,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import model.Customer;
 
 import java.util.List;
@@ -155,6 +156,29 @@ public class CustomerResource {
         em.close();
 
         return message;
+    }
+
+    @POST
+    @Path("/register")  // Make sure the path is exactly as defined
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerCustomer(String customerJson) {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Customer customer = new Gson().fromJson(customerJson, Customer.class);
+            em.persist(customer);
+            em.getTransaction().commit();
+            return Response.status(Response.Status.CREATED).entity(new Gson().toJson(customer)).build();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error during registration: " + e.getMessage() + "\"}").build();
+        } finally {
+            em.close();
+        }
     }
     // jack
     @GET

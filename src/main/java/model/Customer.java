@@ -68,14 +68,15 @@ public class Customer {
     private String username;
 
     @Size(max = 30)
-    @Column(name = "Password", length = 30)
+    @NotNull
+    @Column(name = "Password", nullable = false, length = 30)
     private String password;
 
     public Integer getCustomerId() {
         return customerId;
     }
 
-    public void setId(Integer customerId) {
+    public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
     }
 
@@ -163,7 +164,7 @@ public class Customer {
         return agentId;
     }
 
-    public void setAgent(Integer agentId) {
+    public void setAgentId(Integer agentId) {
         this.agentId = agentId;
     }
 
@@ -182,5 +183,4 @@ public class Customer {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }
