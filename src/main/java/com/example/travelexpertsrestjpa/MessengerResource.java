@@ -30,19 +30,6 @@ public class MessengerResource {
         return gson.toJson(messages);
     }
 
-    @GET
-    @Path("new")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllMessages(@PathParam("customerId") int customerId) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-        EntityManager em = factory.createEntityManager();
-        Query query = em.createQuery("SELECT m FROM MessageM m WHERE m.customerId = " + customerId, MessageM.class);
-
-        List<MessageM> messages = query.getResultList();
-        Gson gson = new Gson();
-
-        return gson.toJson(messages);
-    }
 
     // Update or insert a customer based on the provided JSON data and return a status message
     @POST
