@@ -156,4 +156,19 @@ public class CustomerResource {
 
         return message;
     }
+    // jack
+    @GET
+    @Path("getcustomer/{ username }")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCustomer(@PathParam("username") String username)  {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+        EntityManager em = factory.createEntityManager();
+        Customer customer = em.find(Customer.class, username);
+        Gson gson = new Gson();
+
+        return gson.toJson(customer);
+    }
+
+    // http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/login/enisonl/password
+
 }

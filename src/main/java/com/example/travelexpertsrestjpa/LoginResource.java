@@ -1,0 +1,33 @@
+package com.example.travelexpertsrestjpa;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import model.Customer;
+
+import java.util.List;
+//http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallcustomers
+// Retrieve selected customer details and return as JSON
+@Path("/login")
+public class LoginResource {
+    // http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/login/getcustomer/enisonl/password
+    @GET
+    @Path("getcustomer/{ username }/{ password }")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCustomer(@PathParam("username") String username, @PathParam("password") String password)  {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+        EntityManager em = factory.createEntityManager();
+        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = '" + username + "' AND c.password = '" + password + "'");
+        List<Customer> customer = query.getResultList();
+        Gson gson = new Gson();
+
+        return gson.toJson(customer);
+    }
+
+}

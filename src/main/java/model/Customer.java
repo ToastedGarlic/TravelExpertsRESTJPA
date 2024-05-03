@@ -63,6 +63,14 @@ public class Customer {
     @Column(name = "AgentId", nullable = false)
     private Integer agentId;
 
+    @Size(max = 30)
+    @Column(name = "Username", length = 30)
+    private String username;
+
+    @Size(max = 30)
+    @Column(name = "Password", length = 30)
+    private String password;
+
     public Integer getCustomerId() {
         return customerId;
     }
@@ -157,6 +165,22 @@ public class Customer {
 
     public void setAgent(Integer agentId) {
         this.agentId = agentId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }
