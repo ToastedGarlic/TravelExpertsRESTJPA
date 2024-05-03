@@ -21,7 +21,7 @@ public class MessageM {
     }
 
     @Column(name = "MsgDate")
-    private Timestamp msgDate;
+    private transient Timestamp msgDate;
 
     public Timestamp getMsgDate() {
         return msgDate;

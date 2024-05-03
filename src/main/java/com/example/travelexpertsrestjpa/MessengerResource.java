@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import model.Customer;
 import model.MessageM;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 //http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/message/getallmessages
@@ -33,18 +34,19 @@ public class MessengerResource {
 
     // Update or insert a customer based on the provided JSON data and return a status message
     @POST
-    @Path("postcustomer")
+    @Path("new")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String postCustomer(String jsonString)  {
+    public String postMessage(String jsonString)  {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Gson gson = new Gson();
-        Customer customer = gson.fromJson(jsonString, Customer.class);
+        MessageM messageM = gson.fromJson(jsonString, MessageM.class);
         em.getTransaction().begin();
-        Customer savedCustomer = em.merge(customer);
+        MessageM savedMessage = em.merge(messageM);
+        System.out.println("RUNNING POST MESSAGE!");
         String message = null;
-        if (savedCustomer != null)
+        if (messageM != null)
         {
             em.getTransaction().commit();
             message = "{ \"message\": \"Customer updated successfully\" }";
