@@ -1,21 +1,34 @@
 package model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
+import jakarta.validation.constraints.Size;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "bookings")
 public class Booking {
-    private Integer id;
-    private Timestamp bookingDate;
-    private String bookingNo;
-    private Double travelerCount;
-    private Customer customer;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BookingId", nullable = false)
+    private Integer id;
+
+    @Column(name = "BookingDate")
+    private String bookingDate;
+
+    @Size(max = 50)
+    @Column(name = "BookingNo", length = 50)
+    private String bookingNo;
+
+    @Column(name = "TravelerCount")
+    private Double travelerCount;
+
+    @Column(name = "CustomerId")
+    private Integer customerId;
+
+    @Column(name = "PackageId")
+    private Integer packageField;
+
     public Integer getId() {
         return id;
     }
@@ -24,16 +37,14 @@ public class Booking {
         this.id = id;
     }
 
-    @Column(name = "BookingDate")
-    public Timestamp getBookingDate() {
+    public String getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(Timestamp bookingDate) {
+    public void setBookingDate(String bookingDate) {
         this.bookingDate = bookingDate;
     }
 
-    @Column(name = "BookingNo", length = 50)
     public String getBookingNo() {
         return bookingNo;
     }
@@ -42,7 +53,6 @@ public class Booking {
         this.bookingNo = bookingNo;
     }
 
-    @Column(name = "TravelerCount")
     public Double getTravelerCount() {
         return travelerCount;
     }
@@ -51,13 +61,20 @@ public class Booking {
         this.travelerCount = travelerCount;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CustomerId")
-    public Customer getCustomer() {
-        return customer;
+    public Integer getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
+
+    public Integer getPackageField() {
+        return packageField;
+    }
+
+    public void setPackageField(Integer packageField) {
+        this.packageField = packageField;
+    }
+
 }

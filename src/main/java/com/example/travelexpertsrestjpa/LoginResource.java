@@ -1,14 +1,13 @@
 package com.example.travelexpertsrestjpa;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import model.Booking;
 import model.Customer;
 
 import java.util.List;
@@ -28,6 +27,19 @@ public class LoginResource {
         Gson gson = new Gson();
 
         return gson.toJson(customer);
+    }
+
+    @GET
+    @Path("customerbooking/{ customerid }/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCustomer(@PathParam("customerid") int customerId) {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+        EntityManager em = factory.createEntityManager();
+        Query query = em.createQuery("SELECT b FROM Booking b WHERE b.customerId = '" + customerId + "'");
+        List<Booking> booking = query.getResultList();
+        Gson gson = new Gson();
+
+        return gson.toJson(booking);
     }
 
 }
