@@ -156,6 +156,13 @@
                 event.preventDefault();
                 deletePackage();
             });
+            $(document).ready(function() {
+
+                $("#btnClear").click(function(event) {
+                    event.preventDefault();
+                    refreshAndClearForm();
+                });
+            });
         });
     </script>
 </head>
@@ -184,10 +191,12 @@
     <label for="pkgAgencyCommission">Agency Commission:</label>
     <input id="pkgAgencyCommission" type="number" step="0.01" /><br />
 
-    <!-- Buttons for CRUD operations -->
-    <button type="button" id="btnUpdate">Update</button>
-    <button type="button" id="btnInsert">Insert</button>
-    <button type="button" id="btnDelete">Delete</button>
+    <div class="button-container">
+        <button type="button" id="btnInsert">Insert</button>
+        <button type="button" id="btnUpdate">Update</button>
+        <button type="button" id="btnDelete">Delete</button>
+        <button type="button" id="btnClear">Clear</button>
+    </div>
 </form>
 </body>
 </html>

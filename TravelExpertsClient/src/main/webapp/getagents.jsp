@@ -8,8 +8,6 @@
     <link rel="stylesheet" type="text/css" href="formstyles.css">
     <script src="jquery.js"></script>
     <script>
-
-
         // Function to load select options with agent data
         function loadSelectAgents() {
             $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/agent/getallagents", function(data) {
@@ -48,6 +46,7 @@
             $('form')[0].reset();
             $("#agentId").val('');
             loadSelectAgents();  // Refresh the dropdown list
+            enableCreateButton();  // Re-enable the create button
         }
 
         // Validates required fields before submission
@@ -136,22 +135,47 @@
                 }
             });
         }
-
         $(document).ready(function() {
             loadSelectAgents();
+
+            // Event handler for select dropdown changes
+            $("#agentselect").change(function() {
+                var agentId = $(this).val();
+                if (agentId) {
+                    getAgent(agentId);
+                    $("#btnCreate").prop('disabled', true).attr('title', 'No inserting allowed when an agent is selected');
+                } else {
+                    clearForm();
+                    $("#btnCreate").prop('disabled', false).removeAttr('title');
+                }
+            });
+
             $("#btnCreate").click(function(event) {
                 event.preventDefault();
                 createAgent();
             });
+
             $("#btnUpdate").click(function(event) {
                 event.preventDefault();
                 updateAgent();
             });
+
             $("#btnDelete").click(function(event) {
                 event.preventDefault();
                 deleteAgent();
             });
+
+
+            function clearForm() {
+                $('form')[0].reset();
+                $("#agentselect").val('');
+            }
+
+            function enableCreateButton() {
+                $("#btnCreate").prop('disabled', false).removeAttr('title');
+            }
         });
+
     </script>
 </head>
 <body>
@@ -175,9 +199,12 @@
     <input id="agtPosition" type="text" /><br />
     <label for="agencyId">Agency Id:</label>
     <input id="agencyId" type="number" /><br />
-    <button type="button" id="btnCreate">Create</button>
-    <button type="button" id="btnUpdate">Update</button>
-    <button type="button" id="btnDelete">Delete</button>
+    <div class="button-container">
+        <button type="button" id="btnCreate">Create</button>
+        <button type="button" id="btnUpdate">Update</button>
+        <button type="button" id="btnDelete">Delete</button>
+        <button type="button" id="btnClear">Clear</button>
+    </div>
 </form>
 </body>
 </html>

@@ -86,6 +86,14 @@
                 event.preventDefault();
                 deleteBookingDetail();
             });
+            // Calls the function to clear all form fields and refresh the agent dropdown
+            $(document).ready(function() {
+
+                $("#btnClear").click(function(event) {
+                    event.preventDefault();
+                    refreshAndClearForm();
+                });
+            });
         });
     </script>
 </head>
@@ -113,7 +121,10 @@
     <input id="agencyCommission" type="text" disabled /><br />
 
     <!-- Button to delete booking detail -->
-    <button type="button" id="btnDelete">Delete</button>
+    <div class="button-container">
+        <button type="button" id="btnDelete">Delete</button>
+        <button type="button" id="btnClear">Clear</button>
+    </div>
 </form>
 </body>
 </html>

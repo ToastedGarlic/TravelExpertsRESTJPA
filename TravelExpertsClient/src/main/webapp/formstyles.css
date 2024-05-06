@@ -1,16 +1,53 @@
+/* Global body styling */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-image: url('assets/bg-1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 
-/* Form styling */
+/* Styling for all forms */
 form {
     max-width: 600px;
     margin: 50px auto;
     padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.6);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
 
 form * {
     font-size: 1.4em;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.button-container button {
+    min-width: 100px;
+    max-width: 140px;
+    padding: 10px;
+    flex-grow: 1;
+    flex-basis: auto;
+    margin-right: 10px;
+    border-radius: 20px;
+    background-color: #FFA500; /* Vibrant orange */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.button-container button:last-child {
+    margin-right: 0;
 }
 
 /* Label styling */
@@ -35,21 +72,18 @@ select {
     color: #0000FF;
 }
 
-/* Button styling */
-input[type="submit"],
-button {
-    background-color: #1A76D1;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+/* Button hover effect */
+button:hover {
+    background-color: #FF8C00; /* Slightly deeper orange for hover */
+}
+button[disabled] {
+    background-color: #ccc; /* Greyed out */
+    color: #666;
+    cursor: not-allowed;
 }
 
-/* Button hover effect */
-input[type="submit"]:hover,
-button:hover {
-    background-color: #2196F3;
+button[disabled]:hover {
+    background-color: #ccc; /* Maintain the same color on hover */
 }
 
 /* Media query for responsiveness */

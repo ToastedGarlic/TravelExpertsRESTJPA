@@ -159,6 +159,13 @@
                 event.preventDefault();
                 deleteCustomer();
             });
+            $(document).ready(function() {
+
+                $("#btnClear").click(function(event) {
+                    event.preventDefault();
+                    refreshAndClearForm();
+                });
+            });
         });
     </script>
 </head>
@@ -208,11 +215,12 @@
     <label for="password">Password:</label>
     <input id="password" type="password" /><br />
 
-
-    <!-- Buttons for CRUD operations -->
-    <button type="button" id="btnUpdate">Update</button>
-    <button type="button" id="btnInsert">Insert</button>
-    <button type="button" id="btnDelete">Delete</button>
+    <div class="button-container">
+        <button type="button" id="btnInsert">Insert</button>
+        <button type="button" id="btnUpdate">Update</button>
+        <button type="button" id="btnDelete">Delete</button>
+        <button type="button" id="btnClear">Clear</button>
+    </div>
 </form>
 </body>
 </html>
