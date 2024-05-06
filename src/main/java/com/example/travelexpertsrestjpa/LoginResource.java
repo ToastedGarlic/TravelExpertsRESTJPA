@@ -14,6 +14,9 @@ import model.Customer;
 import java.util.List;
 //http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallcustomers
 // Retrieve selected customer details and return as JSON
+
+//all code by jack
+//get customer information if username and password submitted matched
 @Path("/login")
 public class LoginResource {
     // http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/login/getcustomer/enisonl/password
@@ -30,6 +33,7 @@ public class LoginResource {
         return gson.toJson(customer);
     }
 
+    // get specific customer booking detail by customerId
     @GET
     @Path("customerbooking/{ customerid }/")
     @Produces(MediaType.APPLICATION_JSON)

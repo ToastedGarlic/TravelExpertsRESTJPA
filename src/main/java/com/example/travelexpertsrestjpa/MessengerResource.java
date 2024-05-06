@@ -14,6 +14,10 @@ import model.MessageM;
 import java.sql.Timestamp;
 import java.util.List;
 
+
+//MessengerResource.java
+//author: Michael Chessall
+
 //http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/message/getallmessages
 
 
