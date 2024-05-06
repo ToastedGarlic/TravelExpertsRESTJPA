@@ -48,6 +48,9 @@
             loadSelectAgents();  // Refresh the dropdown list
             enableCreateButton();  // Re-enable the create button
         }
+        function enableCreateButton() {
+            $("#btnCreate").prop('disabled', false).removeAttr('title');
+        }
 
         // Validates required fields before submission
         function validateForm() {
@@ -145,7 +148,7 @@
                     getAgent(agentId);
                     $("#btnCreate").prop('disabled', true).attr('title', 'No inserting allowed when an agent is selected');
                 } else {
-                    clearForm();
+                    refreshAndClearForm();
                     $("#btnCreate").prop('disabled', false).removeAttr('title');
                 }
             });
@@ -164,16 +167,12 @@
                 event.preventDefault();
                 deleteAgent();
             });
+            $("#btnClear").click(function(event) {
+                event.preventDefault();
+                refreshAndClearForm();
+            });
 
 
-            function clearForm() {
-                $('form')[0].reset();
-                $("#agentselect").val('');
-            }
-
-            function enableCreateButton() {
-                $("#btnCreate").prop('disabled', false).removeAttr('title');
-            }
         });
 
     </script>

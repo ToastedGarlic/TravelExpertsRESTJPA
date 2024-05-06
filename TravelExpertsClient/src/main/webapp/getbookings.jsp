@@ -38,23 +38,27 @@
         function getBooking(bookingId) {
             if (!bookingId) {
                 refreshAndClearForm();
-                return; // Exit if no booking ID is selected
+                return;
             }
             $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/booking/getbooking/" + bookingId, function(data) {
                 $("#bookingNo").val(data.bookingNo);
                 $("#bookingDate").val(new Date(data.bookingDate).toISOString().substring(0, 10));
                 $("#travelerCount").val(data.travelerCount);
                 $("#customerId").val(data.customer ? data.customer.id : "");
+                $("#btnInsert").prop('disabled', true).attr('title', 'No inserting allowed when a booking is selected');
             }).fail(function() {
                 $("#message").html("Failed to load booking details.");
             });
         }
-
-        // Clears the form and reloads the bookings and customers list
         function refreshAndClearForm() {
             $('form')[0].reset();
             loadSelectBookings();  // Refresh the booking dropdown list
             loadSelectCustomers(); // Refresh the customer dropdown list
+            enableInsertButton();  // Re-enable the create button
+        }
+
+        function enableInsertButton() {
+            $("#btnInsert").prop('disabled', false).removeAttr('title');
         }
 
         // Validates required fields before submission
@@ -118,24 +122,29 @@
         $(document).ready(function() {
             loadSelectBookings();
             loadSelectCustomers();
-            $("#btnUpdate").click(function(event) {
-                event.preventDefault();
-                saveBooking("PUT");
+            $("#bookingselect").change(function() {
+                var bookingId = $(this).val();
+                getBooking(bookingId);
             });
+
             $("#btnInsert").click(function(event) {
                 event.preventDefault();
                 saveBooking("POST");
             });
+
+            $("#btnUpdate").click(function(event) {
+                event.preventDefault();
+                saveBooking("PUT");
+            });
+
             $("#btnDelete").click(function(event) {
                 event.preventDefault();
                 deleteBooking();
             });
-            $(document).ready(function() {
 
-                $("#btnClear").click(function(event) {
-                    event.preventDefault();
-                    refreshAndClearForm();
-                });
+            $("#btnClear").click(function(event) {
+                event.preventDefault();
+                refreshAndClearForm();
             });
         });
     </script>
