@@ -1,3 +1,5 @@
+
+<!-- Navigation bar -->
 <nav>
     <link rel="stylesheet" href="navstyles.css" />
     <div class="nav__logo"><a href="index.jsp">TravelExperts</a></div>

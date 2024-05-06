@@ -1,4 +1,3 @@
-// Define the RESTful web service resource for managing agents
 package com.example.travelexpertsrestjpa;
 
 import com.google.gson.Gson;
@@ -16,11 +15,11 @@ import java.util.List;
 @Path("/agent")
 public class AgentsResource {
 
+    // Retrieve all agents from the database and return as JSON
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getallagents")
     public String getAllAgents() {
-        // Retrieve all agents from the database and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Query query = em.createQuery("SELECT a FROM Agent a");
@@ -31,11 +30,11 @@ public class AgentsResource {
         return gson.toJson(agents, type);
     }
 
+    // Retrieve a specific agent based on the provided agent ID and return as JSON
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getagent/{agentId}")
     public String getAgent(@PathParam("agentId") int agentId) {
-        // Retrieve a specific agent based on the provided agent ID and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Agent agent = em.find(Agent.class, agentId);
@@ -44,12 +43,12 @@ public class AgentsResource {
         return gson.toJson(agent);
     }
 
+    // Create a new agent based on the provided JSON data
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("postagent")
-    public String postAgent(String jsonString) {
-        // Create a new agent based on the provided JSON data and return a success message
+    @Path("createagent")
+    public String createAgent(String jsonString) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Gson gson = new Gson();
@@ -58,32 +57,32 @@ public class AgentsResource {
         em.persist(agent);
         em.getTransaction().commit();
         em.close();
-        return "{ 'message':'Agent created successfully' }";
+        return gson.toJson("{ 'message':'Agent created successfully' }");
     }
 
+    // Update an existing agent based on the provided agent ID and JSON data
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("updateagent/{agentId}")
     public String updateAgent(@PathParam("agentId") int agentId, String jsonString) {
-        // Update an existing agent with the provided JSON data and return a success message
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Gson gson = new Gson();
         Agent agent = gson.fromJson(jsonString, Agent.class);
-        agent.setAgentId(agentId); // Ensure correct ID is set
+        agent.setAgentId(agentId);  // Ensure correct ID is set
         em.getTransaction().begin();
         em.merge(agent);
         em.getTransaction().commit();
         em.close();
-        return "{ 'message':'Agent updated successfully' }";
+        return gson.toJson("{ 'message':'Agent updated successfully' }");
     }
 
+    // Delete an agent based on the provided agent ID
     @DELETE
-    @Path("deleteagent/{agentId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("deleteagent/{agentId}")
     public String deleteAgent(@PathParam("agentId") int agentId) {
-        // Delete an existing agent based on the provided agent ID and return a success or not found message
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Agent agent = em.find(Agent.class, agentId);
