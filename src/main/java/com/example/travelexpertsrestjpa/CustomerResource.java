@@ -11,12 +11,13 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import model.Customer;
-
 import java.util.List;
-//http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallcustomers
-// Retrieve selected customer details and return as JSON
+
+// RESTful web service resource for managing customers
 @Path("/customer")
 public class CustomerResource {
+
+    // Retrieve all customers and return as JSON
     @GET
     @Path("getallcustomers")
     @Produces(MediaType.APPLICATION_JSON)
@@ -26,11 +27,10 @@ public class CustomerResource {
         Query query = em.createQuery("SELECT c FROM Customer c");
         List<Customer> customers = query.getResultList();
         Gson gson = new Gson();
-
         return gson.toJson(customers);
     }
-    // Retrieve a specific customer based on the provided ID and return as JSON
-    //http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallselectcustomers
+
+    // Retrieve selected customer details and return as JSON
     @GET
     @Path("getallselectcustomers")
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,20 +47,23 @@ public class CustomerResource {
             jsonObject.addProperty("custLastName", customer.getCustLastName());
             jsonArray.add(jsonObject);
         }
-
         return jsonArray.toString();
     }
-    // http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getcustomer/12
+
+    // Retrieve a specific customer based on the provided ID and return as JSON
     @GET
-    @Path("getcustomer/{ customerid }")
+    @Path("getcustomer/{customerId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCustomer(@PathParam("customerid") int customerId)  {
+    public String getCustomer(@PathParam("customerId") int customerId) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
-        Customer customer = em.find(Customer.class, customerId);
-        Gson gson = new Gson();
-
-        return gson.toJson(customer);
+        try {
+            Customer customer = em.find(Customer.class, customerId);
+            Gson gson = new Gson();
+            return gson.toJson(customer);
+        } finally {
+            em.close();
+        }
     }
 
     // Update or insert a customer based on the provided JSON data and return a status message
@@ -87,7 +90,6 @@ public class CustomerResource {
             message = "{ \"message\": \"Customer update failed\" }";
         }
         em.close();
-
         return message;
     }
 
@@ -99,20 +101,16 @@ public class CustomerResource {
     public String putCustomer(String jsonString)  {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
-
         Query query = em.createQuery("select c from Customer c");
         List<Customer> list = query.getResultList();
         int listSize = list.size();
-
         Gson gson = new Gson();
         Customer customer = gson.fromJson(jsonString, Customer.class);
         em.getTransaction().begin();
         em.persist(customer);
-
         query = em.createQuery("select c from Customer c");
         List<Customer> newList = query.getResultList();
         int newListSize = newList.size();
-
         String message = null;
         if (newListSize > listSize)
         {
@@ -125,23 +123,20 @@ public class CustomerResource {
             message = "{ \"message\": \"Customer insert failed\" }";
         }
         em.close();
-
         return message;
     }
 
     // Delete a customer based on the provided ID and return a status message
     @DELETE
-    @Path("deletecustomer/{ customerId }")
+    @Path("deletecustomer/{customerId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteCustomer(@PathParam("customerId") int customerId)  {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
-
         Customer customer = em.find(Customer.class, customerId);
         em.getTransaction().begin();
         em.remove(customer);
-
         String message = null;
         if (!em.contains(customer))
         {
@@ -154,12 +149,12 @@ public class CustomerResource {
             message = "{ \"message\": \"Customer delete failed\" }";
         }
         em.close();
-
         return message;
     }
 
+    // Register a new customer and return a status message
     @POST
-    @Path("/register")  // Make sure the path is exactly as defined
+    @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response registerCustomer(String customerJson) {
@@ -180,19 +175,16 @@ public class CustomerResource {
             em.close();
         }
     }
-    // jack
+
+    // Retrieve a specific customer based on the provided username and return as JSON
     @GET
-    @Path("getcustomer/{ username }")
+    @Path("getcustomer/{username}")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCustomer(@PathParam("username") String username)  {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         Customer customer = em.find(Customer.class, username);
         Gson gson = new Gson();
-
         return gson.toJson(customer);
     }
-
-    // http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/login/enisonl/password
-
-}
+}// http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/login/enisonl/password

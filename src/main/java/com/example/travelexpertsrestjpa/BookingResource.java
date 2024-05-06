@@ -10,7 +10,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import model.Booking;
-
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,11 +32,11 @@ public class BookingResource {
             })
             .create();
 
+    // Retrieve all bookings from the database and return as JSON
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getallbookings")
     public Response getAllBookings() {
-        // Retrieve all bookings from the database and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
@@ -51,11 +50,11 @@ public class BookingResource {
         }
     }
 
+    // Retrieve a specific booking based on the provided ID and return as JSON
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getbooking/{bookingId}")
     public Response getBooking(@PathParam("bookingId") int bookingId) {
-        // Retrieve a specific booking based on the provided ID and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
@@ -72,12 +71,12 @@ public class BookingResource {
         }
     }
 
+    // Create a new booking based on the provided JSON data and return as JSON
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("postbooking")
     public String postBooking(String jsonString) {
-        // Create a new booking based on the provided JSON data and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
@@ -96,12 +95,12 @@ public class BookingResource {
         }
     }
 
+    // Insert a new booking based on the provided JSON data and return as JSON
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("putbooking")
     public String putBooking(String jsonString) {
-        // Insert a new booking based on the provided JSON data and return as JSON
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
@@ -120,11 +119,11 @@ public class BookingResource {
         }
     }
 
+    // Delete an existing booking based on the provided ID and return a success or not found message
     @DELETE
     @Path("deletebooking/{bookingId}")
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteBooking(@PathParam("bookingId") int bookingId) {
-        // Delete an existing booking based on the provided ID and return a success or not found message
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {

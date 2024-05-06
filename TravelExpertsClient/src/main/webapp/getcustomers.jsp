@@ -2,64 +2,132 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Including navbar -->
-    <jsp:include page="navbar.jsp" />
-    <!-- Including CSS files -->
-    <link rel="stylesheet" href="navstyles.css" />
-    <link rel="stylesheet" type="text/css" href="formstyles.css">
     <title>Customer Maintenance</title>
-    <!-- Including jQuery library -->
+    <link rel="stylesheet" href="navstyles.css" />
+    <jsp:include page="navbar.jsp" />
+    <link rel="stylesheet" type="text/css" href="formstyles.css">
     <script src="jquery.js"></script>
     <script>
-        // Function to load select options with customer data
-        var loadSelectCustomers = function()
-        {
-            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallselectcustomers",
-                function(data){
-                    var mySelect = $("#customerselect");
-                    for (i=0; i<data.length; i++)
-                    {
-                        var customer = data[i];
-                        var myOption = document.createElement("option");
-                        myOption.setAttribute("value", customer.customerId);
-                        myOption.appendChild(document.createTextNode(customer.custFirstName
-                            + " " + customer.custLastName));
-                        mySelect[0].appendChild(myOption);
-                    }
+        // Load customer and agent data
+        function loadSelectCustomers() {
+            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getallcustomers", function(data) {
+                var mySelect = $("#customerselect").empty();
+                mySelect.append('<option value="">Select a customer</option>');
+                $.each(data, function(index, customer) {
+                    var customerName = customer.custLastName + ", " + customer.custFirstName;
+                    mySelect.append($('<option>').text(customerName).val(customer.customerId));
                 });
+            }).fail(function() {
+                alert("Failed to load customers.");
+            });
         }
 
-        // Function to retrieve customer details
-        var getCustomer = function(customerId)
-        {
-            $.get("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getcustomer/" + customerId,
-                function(data){
-                    $("#customerId").val(data.customerId);
-                    $("#custFirstName").val(data.custFirstName);
-                    $("#custLastName").val(data.custLastName);
-                    $("#custAddress").val(data.custAddress);
-                    $("#custCity").val(data.custCity);
-                    $("#custProv").val(data.custProv);
-                    $("#custPostal").val(data.custPostal);
-                    $("#custCountry").val(data.custCountry);
-                    $("#custHomePhone").val(data.custHomePhone);
-                    $("#custBusPhone").val(data.custBusPhone);
-                    $("#custEmail").val(data.custEmail);
-                    $("#agentId").val(data.agentId);
-                }
-            );
+        function loadSelectAgents() {
+            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/agent/getallagents", function(data) {
+                var mySelect = $("#agentId").empty();
+                mySelect.append('<option value="">Select an agent</option>');
+                $.each(data, function(index, agent) {
+                    var agentName = agent.agtFirstName + " " + agent.agtLastName;
+                    mySelect.append($('<option>').text(agentName).val(agent.agentId));
+                });
+            }).fail(function() {
+                alert("Failed to load agents.");
+            });
         }
 
-        // Function to build JSON data for POST and PUT requests
-        var buildJSON = function(mode)
-        {
-            var custId = 0;
-            if (mode == "update") {
-                custId = $("#customerId").val();
+        function getCustomer(customerId) {
+            if (!customerId) {
+                refreshAndClearForm();
+                return;
             }
-            var data = {
-                'customerId': custId,
+            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getcustomer/" + customerId, function(data) {
+                $("#custFirstName").val(data.custFirstName);
+                $("#custLastName").val(data.custLastName);
+                $("#custAddress").val(data.custAddress);
+                $("#custCity").val(data.custCity);
+                $("#custProv").val(data.custProv);
+                $("#custPostal").val(data.custPostal);
+                $("#custCountry").val(data.custCountry);
+                $("#custHomePhone").val(data.custHomePhone);
+                $("#custBusPhone").val(data.custBusPhone);
+                $("#custEmail").val(data.custEmail);
+                $("#agentId").val(data.agentId);
+                $("#username").val(data.username);
+                $("#password").val(data.password);
+            }).fail(function() {
+                alert("Failed to load customer details.");
+            });
+        }
+
+        function refreshAndClearForm() {
+            $('form')[0].reset();
+            loadSelectCustomers();
+            loadSelectAgents();
+        }
+
+        function insertCustomer() {
+            if (!validateForm()) return;
+            var customerData = gatherCustomerData();
+            $.ajax({
+                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/postcustomer",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(customerData),
+                success: function(response) {
+                    alert("Customer inserted successfully.");
+                    refreshAndClearForm();
+                },
+                error: function(xhr) {
+                    alert("Failed to insert customer: " + xhr.responseText);
+                }
+            });
+        }
+
+        function updateCustomer() {
+            if (!validateForm()) return;
+            var customerData = gatherCustomerData();
+            customerData.customerId = $("#customerselect").val();
+            $.ajax({
+                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/updatecustomer/" + customerData.customerId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(customerData),
+                success: function(response) {
+                    alert("Customer updated successfully.");
+                    refreshAndClearForm();
+                },
+                error: function(xhr) {
+                    alert("Failed to update customer: " + xhr.responseText);
+                }
+            });
+        }
+
+        function deleteCustomer() {
+            var customerId = $("#customerselect").val();
+            if (!customerId) {
+                alert("Select a customer to delete.");
+                return;
+            }
+            $.ajax({
+                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/deletecustomer/" + customerId,
+                type: "DELETE",
+                success: function(response) {
+                    alert("Customer deleted successfully.");
+                    refreshAndClearForm();
+                },
+                error: function(xhr) {
+                    alert("Failed to delete customer: " + xhr.responseText);
+                }
+            });
+        }
+
+        function validateForm() {
+            return $("#custFirstName").val().trim() && $("#custLastName").val().trim();
+        }
+
+        function gatherCustomerData() {
+            // Gather data from form inputs including the new username and password
+            return {
                 'custFirstName': $("#custFirstName").val(),
                 'custLastName': $("#custLastName").val(),
                 'custAddress': $("#custAddress").val(),
@@ -70,75 +138,34 @@
                 'custHomePhone': $("#custHomePhone").val(),
                 'custBusPhone': $("#custBusPhone").val(),
                 'custEmail': $("#custEmail").val(),
-                'agentId': $("#agentId").val()
+                'agentId': $("#agentId").val(),
+                'username': $("#username").val(),
+                'password': $("#password").val()
             };
-            return JSON.stringify(data);
         }
-
-        // Function to handle POST request
-        var postCustomer = function()
-        {
-            var jsonString = buildJSON("update");
-
-            $.ajax({
-                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/postcustomer",
-                method: "POST",
-                data: jsonString,
-                accept: "application/json",
-                dataType: "json",
-                contentType: "application/json"
-            }).done(function (data, text, xhr) {
-                $("#message").html(data.message);
-            }).fail(function(xhr, text, error){
-                $("#message").html(text + " | " + error);
+        $(document).ready(function() {
+            loadSelectCustomers();
+            loadSelectAgents();
+            $("#btnInsert").click(function(event) {
+                event.preventDefault();
+                insertCustomer();
             });
-        }
-
-        // Function to handle PUT request
-        var putCustomer = function()
-        {
-            var jsonString = buildJSON("insert");
-
-            $.ajax({
-                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/putcustomer",
-                method: "PUT",
-                data: jsonString,
-                accept: "application/json",
-                dataType: "json",
-                contentType: "application/json"
-            }).done(function (data, text, xhr) {
-                $("#message").html(data.message);
-            }).fail(function(xhr, text, error){
-                $("#message").html(text + " | " + error);
+            $("#btnUpdate").click(function(event) {
+                event.preventDefault();
+                updateCustomer();
             });
-        }
-
-        // Function to handle DELETE request
-        var deleteCustomer = function()
-        {
-            var customerId = $("#customerId").val();
-            $.ajax({
-                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/deletecustomer/" + customerId,
-                method: "DELETE",
-                accept: "application/json",
-                dataType: "json",
-                contentType: "application/json"
-            }).done(function (data, text, xhr) {
-                $("#message").html(data.message);
-            }).fail(function(xhr, text, error){
-                $("#message").html(text + " | " + error);
+            $("#btnDelete").click(function(event) {
+                event.preventDefault();
+                deleteCustomer();
             });
-        }
+        });
     </script>
 </head>
 <body>
-
 <form>
     <select id="customerselect" onchange="getCustomer(this.value)">
-        <option value="">Select a customer to see details</option>
+        <option value="">Select a customer</option>
     </select>
-    <label for="customerId">Id:</label>
-    <input id="customerId" type="text" disabled="disabled" /><br />
 
     <label for="custFirstName">First Name:</label>
     <input id="custFirstName" type="text" /><br />
@@ -170,21 +197,21 @@
     <label for="custEmail">Email:</label>
     <input id="custEmail" type="text" /><br />
 
-    <label for="agentId">Agent Id:</label>
-    <input id="agentId" type="number" /><br />
+    <label for="agentId">Agent:</label>
+    <select id="agentId">
+        <option value="">Select an agent</option>
+    </select><br />
+    <label for="username">Username:</label>
+    <input id="username" type="text" /><br />
+
+    <label for="password">Password:</label>
+    <input id="password" type="password" /><br />
+
 
     <!-- Buttons for CRUD operations -->
     <button type="button" id="btnUpdate">Update</button>
     <button type="button" id="btnInsert">Insert</button>
     <button type="button" id="btnDelete">Delete</button>
 </form>
-
-<!-- Script to load customers, handle CRUD operations -->
-<script>
-    $(document).ready(loadSelectCustomers);
-    $("#btnUpdate").click(postCustomer);
-    $("#btnInsert").click(putCustomer);
-    $("#btnDelete").click(deleteCustomer);
-</script>
 </body>
 </html>

@@ -1,7 +1,7 @@
+<!-- Including navbar -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Including navbar -->
     <jsp:include page="navbar.jsp" />
     <link rel="stylesheet" href="indexstyles.css" />
     <meta charset="UTF-8" />
@@ -82,7 +82,7 @@
 <section class="banner__container">
     <div class="section__container">
         <div class="banner__content">
-            <h2>Discount 10-30% Off</h2>
+            <h2>Discount <a href="getpackages.jsp">10-30%</a> Off</h2>
             <p>
                 Travel the world on a budget with our unbeatable discounted travel
                 deals. Whether you're looking for a last-minute escape or planning
@@ -127,13 +127,7 @@
 
 <footer>
     <div class="section__container">
-        <h4>Travel.co</h4>
-        <div class="social__icons">
-            <span><i class="ri-facebook-fill"></i></span>
-            <span><i class="ri-twitter-fill"></i></span>
-            <span><i class="ri-instagram-line"></i></span>
-            <span><i class="ri-linkedin-fill"></i></span>
-        </div>
+        <h4>TravelExperts</h4>
         <p>
             Travel makes one modest. You see what a tiny place you occupy in the
             world.
