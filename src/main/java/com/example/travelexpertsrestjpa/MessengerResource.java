@@ -1,3 +1,4 @@
+//created by Michael Chessall
 package com.example.travelexpertsrestjpa;
 
 import com.google.gson.Gson;
@@ -14,6 +15,8 @@ import java.sql.Timestamp;
 import java.util.List;
 
 //http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/message/getallmessages
+
+
 // Retrieve selected customer details and return as JSON
 @Path("/message")
 public class MessengerResource {
