@@ -61,10 +61,24 @@
             $("#btnInsert").prop('disabled', false).removeAttr('title');
         }
 
+
         // Validates required fields before submission
         function validateForm() {
-            if ($("#bookingNo").val().trim() === "" || $("#bookingDate").val().trim() === "") {
-                alert("Booking Number and Booking Date are required.");
+            var bookingNo = $("#bookingNo").val().trim();
+            var bookingDate = $("#bookingDate").val().trim();
+            var customerId = $("#customerId").val();
+            var errorMessage = [];
+            if (bookingNo === "") {
+                errorMessage.push("Booking Number is required.");
+            }
+            if (bookingDate === "") {
+                errorMessage.push("Booking Date is required.");
+            }
+            if (customerId === "") {
+                errorMessage.push("Customer selection is required.");
+            }
+            if (errorMessage.length > 0) {
+                alert(errorMessage.join("\n"));
                 return false;
             }
             return true;

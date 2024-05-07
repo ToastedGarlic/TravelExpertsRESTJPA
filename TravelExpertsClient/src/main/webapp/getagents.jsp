@@ -54,13 +54,24 @@
 
         // Validates required fields before submission
         function validateForm() {
-            if ($("#agtFirstName").val().trim() === "" || $("#agtLastName").val().trim() === "") {
-                $("#message").html("First Name and Last Name are required.");
+            var firstName = $("#agtFirstName").val().trim();
+            var lastName = $("#agtLastName").val().trim();
+            var email = $("#agtEmail").val().trim();
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (firstName === "" || lastName === "") {
+                $("#message").text("First Name and Last Name are required.");
                 return false;
             }
+
+            if (email !== "" && !emailRegex.test(email)) {
+                $("#message").text("Invalid email address.");
+                return false;
+            }
+
+            $("#message").text(""); // Clear previous messages
             return true;
         }
-
         // AJAX call to create a new agent
         function createAgent() {
             if (!validateForm()) return;
@@ -121,7 +132,7 @@
         function deleteAgent() {
             var agentId = $("#agentId").val();
             if (!agentId) {
-                $("#message").html("Select an agent to delete.");
+                $("#message").text("Select an agent to delete.");
                 return;
             }
 
@@ -130,18 +141,17 @@
                 type: "DELETE",
                 success: function(response) {
                     alert("Agent deleted successfully.");
-                    $("#message").html("Agent deleted successfully.");
-                    refreshAndClearForm();  // Ensure this is called to clear the form and refresh the dropdown
+                    $("#message").text("Agent deleted successfully.");
+                    refreshAndClearForm();
                 },
                 error: function() {
-                    $("#message").html("Failed to delete agent.");
+                    $("#message").text("Failed to delete agent.");
                 }
             });
         }
         $(document).ready(function() {
             loadSelectAgents();
 
-            // Event handler for select dropdown changes
             $("#agentselect").change(function() {
                 var agentId = $(this).val();
                 if (agentId) {
@@ -155,6 +165,7 @@
 
             $("#btnCreate").click(function(event) {
                 event.preventDefault();
+                if (!validateForm()) return; // Validate the form before creating agent
                 createAgent();
             });
 
@@ -171,8 +182,6 @@
                 event.preventDefault();
                 refreshAndClearForm();
             });
-
-
         });
 
     </script>

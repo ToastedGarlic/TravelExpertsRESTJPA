@@ -50,12 +50,38 @@
 
         // Validates required fields before submission
         function validateForm() {
-            if ($("#pkgName").val().trim() === "" || $("#pkgStartDate").val().trim() === "") {
+            var pkgName = $("#pkgName").val().trim();
+            var pkgStartDate = $("#pkgStartDate").val().trim();
+            var pkgBasePrice = parseFloat($("#pkgBasePrice").val());
+            var pkgAgencyCommission = parseFloat($("#pkgAgencyCommission").val());
+
+            if (pkgName === "" || pkgStartDate === "") {
                 alert("Package name and start date are required.");
                 return false;
             }
+
+            if (isNaN(pkgBasePrice) || isNaN(pkgAgencyCommission)) {
+                alert("Please enter valid numeric values for base price and agency commission.");
+                return false;
+            }
+
+            if (pkgBasePrice <= pkgAgencyCommission) {
+                alert("Base price must be greater than the agency commission.");
+                return false;
+            }
+            // Convert date strings to date objects to compare
+            var startDate = new Date(pkgStartDate);
+            var endDate = new Date(pkgEndDate);
+
+            // Check if end date is before start date
+            if (endDate < startDate) {
+                alert("End date must be after start date.");
+                return false;
+            }
+
             return true;
         }
+
 
         // Function to handle CREATE and UPDATE requests
         function savePackage(method) {
