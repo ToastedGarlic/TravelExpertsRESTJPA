@@ -41,7 +41,7 @@
                 refreshAndClearForm();
                 return;
             }
-            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getcustomer/" + customerId, function(data) {
+            $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/getcustomer2/" + customerId, function(data) {
                 $("#custFirstName").val(data.custFirstName);
                 $("#custLastName").val(data.custLastName);
                 $("#custAddress").val(data.custAddress);

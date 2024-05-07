@@ -14,7 +14,7 @@
                 var select = $("#packageselect").empty();
                 select.append('<option value="">Select a package</option>');
                 $.each(data, function(index, pkg) {
-                    select.append($('<option>').text(pkg.pkgName + " - " + pkg.pkgStartDate).val(pkg.packageId));
+                    select.append($('<option>').text(pkg.pkgName + " - " + pkg.pkgStartDate).val(pkg.id));
                 });
             }).fail(function() {
                 alert("Failed to load packages.");

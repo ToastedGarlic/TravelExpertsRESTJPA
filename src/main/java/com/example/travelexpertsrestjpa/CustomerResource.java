@@ -53,6 +53,22 @@ public class CustomerResource {
 
     // Retrieve a specific customer based on the provided ID and return as JSON
     @GET
+    @Path("getcustomer2/{customerId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCustomer2(@PathParam("customerId") int customerId) {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+        EntityManager em = factory.createEntityManager();
+        try {
+            Customer customer = em.find(Customer.class, customerId);
+            Gson gson = new Gson();
+            return gson.toJson(customer);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Retrieve a specific customer based on the provided ID and return as JSON
+    @GET
     @Path("getcustomer/{customerId}")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCustomer(@PathParam("customerId") int customerId) {
