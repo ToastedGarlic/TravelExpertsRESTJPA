@@ -69,22 +69,12 @@
                 alert("Base price must be greater than the agency commission.");
                 return false;
             }
-            // Convert date strings to date objects to compare
-            var startDate = new Date(pkgStartDate);
-            var endDate = new Date(pkgEndDate);
-
-            // Check if end date is before start date
-            if (endDate < startDate) {
-                alert("End date must be after start date.");
-                return false;
-            }
 
             return true;
         }
 
-
-        // Function to handle CREATE and UPDATE requests
-        function savePackage(method) {
+        // Function to handle CREATE requests
+        function savePackage() {
             if (!validateForm()) return;
             var packageData = {
                 pkgName: $("#pkgName").val(),
@@ -94,21 +84,18 @@
                 pkgBasePrice: $("#pkgBasePrice").val(),
                 pkgAgencyCommission: $("#pkgAgencyCommission").val()
             };
-            var url = method === "POST" ?
-                "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/package/createpackage" :
-                "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/package/updatepackage/" + $("#packageId").val();
 
             $.ajax({
-                url: url,
-                type: method,
+                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/package/createpackage",
+                type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(packageData),
                 success: function(response) {
-                    alert("Package operation successful.");
+                    alert("Package created successfully.");
                     refreshAndClearForm();
                 },
                 error: function(xhr) {
-                    alert("Failed to process package: " + xhr.responseText);
+                    alert("Failed to create package: " + xhr.responseText);
                 }
             });
         }
@@ -149,12 +136,7 @@
 
             $("#btnInsert").click(function(event) {
                 event.preventDefault();
-                savePackage("POST");
-            });
-
-            $("#btnUpdate").click(function(event) {
-                event.preventDefault();
-                savePackage("PUT");
+                savePackage();
             });
 
             $("#btnDelete").click(function(event) {
@@ -190,7 +172,6 @@
     <input id="pkgAgencyCommission" type="number" step="0.01" /><br />
     <div class="button-container">
         <button type="button" id="btnInsert">Create</button>
-        <button type="button" id="btnUpdate">Update</button>
         <button type="button" id="btnDelete">Delete</button>
         <button type="button" id="btnClear">Clear</button>
     </div>

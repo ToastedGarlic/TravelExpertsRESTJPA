@@ -1,4 +1,3 @@
-<!--created by Mohsen!-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -24,8 +23,8 @@
         // Function to retrieve and display agent details
         function getAgent(agentId) {
             if (!agentId) {
-                clearForm();
-                return; // Exit if no agent ID is selected
+                refreshAndClearForm();
+                return;
             }
             $.getJSON("http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/agent/getagent/" + agentId, function(data) {
                 $("#agentId").val(data.agentId);
@@ -45,9 +44,10 @@
         function refreshAndClearForm() {
             $('form')[0].reset();
             $("#agentId").val('');
-            loadSelectAgents();  // Refresh the dropdown list
-            enableCreateButton();  // Re-enable the create button
+            loadSelectAgents();
+            enableCreateButton();
         }
+
         function enableCreateButton() {
             $("#btnCreate").prop('disabled', false).removeAttr('title');
         }
@@ -56,22 +56,15 @@
         function validateForm() {
             var firstName = $("#agtFirstName").val().trim();
             var lastName = $("#agtLastName").val().trim();
-            var email = $("#agtEmail").val().trim();
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (firstName === "" || lastName === "") {
-                $("#message").text("First Name and Last Name are required.");
+                $("#message").html("First Name and Last Name are required.");
                 return false;
             }
 
-            if (email !== "" && !emailRegex.test(email)) {
-                $("#message").text("Invalid email address.");
-                return false;
-            }
-
-            $("#message").text(""); // Clear previous messages
             return true;
         }
+
         // AJAX call to create a new agent
         function createAgent() {
             if (!validateForm()) return;
@@ -128,27 +121,6 @@
             });
         }
 
-        // AJAX call to delete an agent
-        function deleteAgent() {
-            var agentId = $("#agentId").val();
-            if (!agentId) {
-                $("#message").text("Select an agent to delete.");
-                return;
-            }
-
-            $.ajax({
-                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/agent/deleteagent/" + agentId,
-                type: "DELETE",
-                success: function(response) {
-                    alert("Agent deleted successfully.");
-                    $("#message").text("Agent deleted successfully.");
-                    refreshAndClearForm();
-                },
-                error: function() {
-                    $("#message").text("Failed to delete agent.");
-                }
-            });
-        }
         $(document).ready(function() {
             loadSelectAgents();
 
@@ -165,7 +137,6 @@
 
             $("#btnCreate").click(function(event) {
                 event.preventDefault();
-                if (!validateForm()) return; // Validate the form before creating agent
                 createAgent();
             });
 
@@ -174,10 +145,6 @@
                 updateAgent();
             });
 
-            $("#btnDelete").click(function(event) {
-                event.preventDefault();
-                deleteAgent();
-            });
             $("#btnClear").click(function(event) {
                 event.preventDefault();
                 refreshAndClearForm();
@@ -210,7 +177,6 @@
     <div class="button-container">
         <button type="button" id="btnCreate">Create</button>
         <button type="button" id="btnUpdate">Update</button>
-        <button type="button" id="btnDelete">Delete</button>
         <button type="button" id="btnClear">Clear</button>
     </div>
 </form>
