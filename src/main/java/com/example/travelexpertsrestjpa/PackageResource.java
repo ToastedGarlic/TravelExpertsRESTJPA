@@ -1,47 +1,28 @@
-//created by mohsen
+//created by Mohsen
 package com.example.travelexpertsrestjpa;
 
-import com.google.gson.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
+import com.google.gson.Gson;
+import jakarta.persistence.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import model.Package;
 
-import java.lang.reflect.Type;
-import java.time.Instant;
 import java.util.List;
 
 @Path("/package")
 public class PackageResource {
-    // Gson instance with a custom deserializer for handling Instant objects
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Instant.class, new JsonDeserializer<Instant>() {
-                @Override
-                public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                    String dateTimeString = json.getAsJsonPrimitive().getAsString();
-                    try {
-                        return Instant.parse(dateTimeString);
-                    } catch (Exception e) {
-                        throw new JsonParseException("Unparseable date: \"" + dateTimeString + "\". Supported format: yyyy-MM-dd'T'HH:mm:ssZ");
-                    }
-                }
-            })
-            .create();
+    private static final Gson gson = new Gson();
+    private static final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
 
     // Retrieve all packages and return as JSON
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getallpackages")
     public Response getAllPackages() {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
-            Query query = em.createQuery("SELECT p FROM Package p", Package.class);
-            List<Package> packages = query.getResultList();
+            List<Package> packages = em.createQuery("SELECT p FROM Package p", Package.class).getResultList();
             return Response.ok(gson.toJson(packages)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error retrieving packages: " + e.getMessage() + "\"}").build();
@@ -55,7 +36,6 @@ public class PackageResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getpackage/{packageId}")
     public Response getPackage(@PathParam("packageId") int packageId) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
             Package packageEntity = em.find(Package.class, packageId);
@@ -71,37 +51,12 @@ public class PackageResource {
         }
     }
 
-    // Update or insert a package based on the provided JSON data and return a status message
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("postpackage")
-    public Response postPackage(String jsonString) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-        EntityManager em = factory.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Package packageEntity = gson.fromJson(jsonString, Package.class);
-            em.persist(packageEntity);  // Use persist to ensure a new package is created
-            em.getTransaction().commit();
-            return Response.ok(gson.toJson(packageEntity)).build();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error creating package: " + e.getMessage() + "\"}").build();
-        } finally {
-            em.close();
-        }
-    }
-
-    // Insert a new package based on the provided JSON data and return a status message
+    // Update a package based on the provided JSON data and package ID
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("putpackage/{packageId}")
-    public Response putPackage(@PathParam("packageId") int packageId, String jsonString) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+    @Path("updatepackage/{packageId}")
+    public Response updatePackage(@PathParam("packageId") int packageId, String jsonString) {
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -110,7 +65,7 @@ public class PackageResource {
                 return Response.status(Response.Status.NOT_FOUND).entity("{\"message\":\"Package not found\"}").build();
             }
             Package updatedPackage = gson.fromJson(jsonString, Package.class);
-            updatedPackage.setId(packageId); // Ensure the ID is set correctly
+            updatedPackage.setId(packageId); // Ensure ID is set correctly
             em.merge(updatedPackage);
             em.getTransaction().commit();
             return Response.ok(gson.toJson(updatedPackage)).build();
@@ -124,22 +79,44 @@ public class PackageResource {
         }
     }
 
-    // Delete a package based on the provided ID and return a status message
+    // Create a new package based on the provided JSON data
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("createpackage")
+    public Response createPackage(String jsonString) {
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Package newPackage = gson.fromJson(jsonString, Package.class);
+            em.persist(newPackage);
+            em.getTransaction().commit();
+            return Response.status(Response.Status.CREATED).entity(gson.toJson(newPackage)).build();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error creating package: " + e.getMessage() + "\"}").build();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Delete a package based on the provided ID
     @DELETE
     @Path("deletepackage/{packageId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String deletePackage(@PathParam("packageId") int packageId) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
+    public Response deletePackage(@PathParam("packageId") int packageId) {
         EntityManager em = factory.createEntityManager();
         try {
+            em.getTransaction().begin();
             Package packageEntity = em.find(Package.class, packageId);
             if (packageEntity != null) {
-                em.getTransaction().begin();
                 em.remove(packageEntity);
                 em.getTransaction().commit();
-                return "{\"message\":\"Package deleted successfully\"}";
+                return Response.ok("{\"message\":\"Package deleted successfully\"}").build();
             } else {
-                return "{\"message\":\"Package not found\"}";
+                return Response.status(Response.Status.NOT_FOUND).entity("{\"message\":\"Package not found\"}").build();
             }
         } finally {
             em.close();
