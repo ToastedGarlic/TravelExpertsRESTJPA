@@ -55,7 +55,6 @@
                 $("#agentId").val(data.agentId);
                 $("#username").val(data.username);
                 $("#password").val(data.password);
-                $("#btnInsert").prop('disabled', true); // Disable insert button when a customer is selected
             }).fail(function() {
                 alert("Failed to load customer details.");
             });
@@ -87,25 +86,10 @@
 
         function updateCustomer() {
             if (!validateForm()) return;
-
-            var customerData = {
-                'custFirstName': $("#custFirstName").val(),
-                'custLastName': $("#custLastName").val(),
-                'custAddress': $("#custAddress").val(),
-                'custCity': $("#custCity").val(),
-                'custProv': $("#custProv").val(),
-                'custPostal': $("#custPostal").val(),
-                'custCountry': $("#custCountry").val(),
-                'custHomePhone': $("#custHomePhone").val(),
-                'custBusPhone': $("#custBusPhone").val(),
-                'custEmail': $("#custEmail").val(),
-                'agentId': $("#agentId").val(),
-                'username': $("#username").val(),
-                'password': $("#password").val()
-            };
-
+            var customerData = gatherCustomerData();
+            customerData.customerId = $("#customerselect").val();
             $.ajax({
-                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/putcustomer/" + $("#customerselect").val(),
+                url: "http://localhost:8080/TravelExpertsRESTJPA-1.0-SNAPSHOT/api/customer/updatecustomer/" + customerData.customerId,
                 type: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify(customerData),
@@ -160,44 +144,27 @@
                 'password': $("#password").val()
             };
         }
-        function refreshAndClearForm() {
-            $('form')[0].reset();
-            $("#btnInsert").prop('disabled', false); // Re-enable insert button when form is cleared
-            loadSelectCustomers();
-            loadSelectAgents();
-        }
-
         $(document).ready(function() {
             loadSelectCustomers();
             loadSelectAgents();
-            $("#customerselect").change(function() {
-                var customerId = $(this).val();
-                if (customerId) {
-                    getCustomer(customerId);
-                } else {
-                    refreshAndClearForm(); // Refresh and re-enable insert button if no customer is selected
-                }
-            });
-
             $("#btnInsert").click(function(event) {
                 event.preventDefault();
                 insertCustomer();
             });
-
             $("#btnUpdate").click(function(event) {
                 event.preventDefault();
                 updateCustomer();
-                refreshAndClearForm();
             });
-
             $("#btnDelete").click(function(event) {
                 event.preventDefault();
                 deleteCustomer();
             });
+            $(document).ready(function() {
 
-            $("#btnClear").click(function(event) {
-                event.preventDefault();
-                refreshAndClearForm();
+                $("#btnClear").click(function(event) {
+                    event.preventDefault();
+                    refreshAndClearForm();
+                });
             });
         });
     </script>

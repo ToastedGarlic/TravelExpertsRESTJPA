@@ -76,20 +76,20 @@ public class PackageResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("postpackage")
-    public String postPackage(String jsonString) {
+    public Response postPackage(String jsonString) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             Package packageEntity = gson.fromJson(jsonString, Package.class);
-            Package savedPackage = em.merge(packageEntity);
+            em.persist(packageEntity);  // Use persist to ensure a new package is created
             em.getTransaction().commit();
-            return gson.toJson(savedPackage);
+            return Response.ok(gson.toJson(packageEntity)).build();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            return "{\"message\":\"Error updating package: " + e.getMessage() + "\"}";
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error creating package: " + e.getMessage() + "\"}").build();
         } finally {
             em.close();
         }
@@ -99,21 +99,26 @@ public class PackageResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("putpackage")
-    public String putPackage(String jsonString) {
+    @Path("putpackage/{packageId}")
+    public Response putPackage(@PathParam("packageId") int packageId, String jsonString) {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            Package packageEntity = gson.fromJson(jsonString, Package.class);
-            em.persist(packageEntity);
+            Package existingPackage = em.find(Package.class, packageId);
+            if (existingPackage == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("{\"message\":\"Package not found\"}").build();
+            }
+            Package updatedPackage = gson.fromJson(jsonString, Package.class);
+            updatedPackage.setId(packageId); // Ensure the ID is set correctly
+            em.merge(updatedPackage);
             em.getTransaction().commit();
-            return gson.toJson(packageEntity);
+            return Response.ok(gson.toJson(updatedPackage)).build();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            return "{\"message\":\"Error inserting package: " + e.getMessage() + "\"}";
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"message\":\"Error updating package: " + e.getMessage() + "\"}").build();
         } finally {
             em.close();
         }

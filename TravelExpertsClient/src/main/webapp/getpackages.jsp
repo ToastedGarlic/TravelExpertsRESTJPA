@@ -86,6 +86,8 @@
         // Function to refresh and clear the form
         function refreshAndClearForm() {
             $('form')[0].reset();
+            $("#packageselect").val(''); // Make sure to clear the select
+            $("#btnInsert").prop('disabled', false); // Re-enable the insert button explicitly
             loadSelectPackages();
         }
 
@@ -144,6 +146,16 @@
 
         $(document).ready(function() {
             loadSelectPackages();
+            $("#packageselect").change(function() {
+                var packageId = $(this).val();
+                if (packageId) {
+                    getPackage(packageId);
+                    $("#btnInsert").prop('disabled', true); // Disable the insert button when a package is selected
+                } else {
+                    refreshAndClearForm(); // Refresh and clear form, re-enable insert button if no package is selected
+                    $("#btnInsert").prop('disabled', false);
+                }
+            });
             $("#btnInsert").click(function(event) {
                 event.preventDefault();
                 savePackage("POST");
@@ -156,12 +168,9 @@
                 event.preventDefault();
                 deletePackage();
             });
-            $(document).ready(function() {
-
-                $("#btnClear").click(function(event) {
-                    event.preventDefault();
-                    refreshAndClearForm();
-                });
+            $("#btnClear").click(function(event) {
+                event.preventDefault();
+                refreshAndClearForm();
             });
         });
     </script>
